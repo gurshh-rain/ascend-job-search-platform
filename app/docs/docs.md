@@ -26,8 +26,6 @@
 
 ## Installation
 
-### Windows
-
 1. Open a terminal in the `internship-bot` folder.
 2. Create a virtual environment (recommended):
 
@@ -54,34 +52,6 @@
    Copy-Item config/.env.example config/.env
    ```
 
-### macOS
-
-1. Open a terminal in the `internship-bot` folder.
-2. Create a virtual environment (recommended):
-
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   ```
-
-3. Install the package in editable mode:
-
-   ```bash
-   pip3 install -e .
-   ```
-
-4. Pull the Ollama model:
-
-   ```bash
-   ollama pull qwen2.5:7b
-   ```
-
-5. Copy the environment template:
-
-   ```bash
-   cp config/.env.example config/.env
-   ```
-
 ## First-time setup
 
 Edit `config/.env` and fill in at least these values:
@@ -104,8 +74,10 @@ Optional but useful:
 | `TARGET_SEASON` | `Summer 2027` | Internship season to look for |
 | `MAX_DAILY_LISTINGS` | `25` | Max listings per email. `0` means no cap. Extra are queued. |
 | `MAX_LLM_CALLS` | `0` | Max LLM calls per run. `0` means no cap. Use e.g. `300` to keep runs fast. |
+| `OLLAMA_HOST` | `http://localhost:11434` | URL of the local Ollama server |
+| `OLLAMA_MODEL` | `qwen2.5:7b` | Local LLM model used for filtering |
 | `DAILY_RUN_TIME` | `09:00` | Time used when installing the scheduled task |
-| `SCRAPE_SOURCE_URLS` | 4 built-in sources | Comma-separated URLs to scrape |
+| `SCRAPE_SOURCE_URLS` | 10 built-in sources | Comma-separated URLs to scrape |
 
 ## Configuration with the terminal UI
 
@@ -123,6 +95,7 @@ python manage.py
 
 The UI lets you change all `.env` settings with arrow keys and prompts:
 
+- Ollama host and model
 - Job title keywords
 - Target locations
 - Target season
@@ -262,13 +235,17 @@ By default the bot scrapes:
 - `ApplyGuy/2027-Internships` JSON feed
 - `sndsh404/summer-2027-internships` 
 - `speedyapply/2027-SWE-College-Jobs` 
+- `speedyapply/2027-AI-College-Jobs` 
 - `dreamworkhq/Tech-Internships-2027` 
+- `aprameyak/2027-tech-jobs` — large community list (also has New Grad and Off-Cycle sections)
+- `SuryaHarikrishnan/internship-tracker` (SWE and Data/AI/ML listings)
 - `Y Combinator` via `https://devasheeshg.github.io/yc-api/companies/hiring.json` — internship/co-op roles at YC startups
 
-Optional extra sources (larger / slower):
+Optional extra sources:
 
-- `aprameyak/2027-tech-jobs` — large community list with New Grad and Off-Cycle sections
 - `speedyapply/2027-SWE-College-Jobs/INTERN_INTL.md` — international roles
+
+If the run gets too slow, remove `aprameyak/2027-tech-jobs` or lower `MAX_LLM_CALLS`.
 
 You can add or remove sources by editing `SCRAPE_SOURCE_URLS` in `config/.env` as a comma-separated list. The bot can handle:
 
@@ -330,6 +307,8 @@ And the model is pulled:
 ```powershell
 ollama pull qwen2.5:7b
 ```
+
+To switch models, run `internship-bot-manage` and select `Ollama model`.
 
 ### No listings are found
 

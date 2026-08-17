@@ -15,9 +15,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Ascend",
   description: "Your daily job search agent.",
-  icons: {
-    icon: "/ascend_logo.jpg",
-  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

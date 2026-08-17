@@ -24,7 +24,6 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <li>Optional: <code>cloudflared</code> or <code>ngrok</code> to expose the local approve/reject server</li>
 </ul>
 <h2 id="installation">Installation</h2>
-<h3 id="windows">Windows</h3>
 <ol>
 <li>Open a terminal in the <code>internship-bot</code> folder.</li>
 <li>
@@ -46,31 +45,6 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <li>
 <p>Copy the environment template:</p>
 <div class="code-block"><pre><span></span><code><span class="nb">Copy-Item</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span><span class="p">.</span><span class="n">example</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span>
-</code></pre></div>
-</li>
-</ol>
-<h3 id="macos">macOS</h3>
-<ol>
-<li>Open a terminal in the <code>internship-bot</code> folder.</li>
-<li>
-<p>Create a virtual environment (recommended):</p>
-<div class="code-block"><pre><span></span><code>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
-<span class="nb">source</span><span class="w"> </span>.venv/bin/activate
-</code></pre></div>
-</li>
-<li>
-<p>Install the package in editable mode:</p>
-<div class="code-block"><pre><span></span><code>pip3<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-</code></pre></div>
-</li>
-<li>
-<p>Pull the Ollama model:</p>
-<div class="code-block"><pre><span></span><code>ollama<span class="w"> </span>pull<span class="w"> </span>qwen2.5:7b
-</code></pre></div>
-</li>
-<li>
-<p>Copy the environment template:</p>
-<div class="code-block"><pre><span></span><code>cp<span class="w"> </span>config/.env.example<span class="w"> </span>config/.env
 </code></pre></div>
 </li>
 </ol>
@@ -147,13 +121,23 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <td>Max LLM calls per run. <code>0</code> means no cap. Use e.g. <code>300</code> to keep runs fast.</td>
 </tr>
 <tr>
+<td><code>OLLAMA_HOST</code></td>
+<td><code>http://localhost:11434</code></td>
+<td>URL of the local Ollama server</td>
+</tr>
+<tr>
+<td><code>OLLAMA_MODEL</code></td>
+<td><code>qwen2.5:7b</code></td>
+<td>Local LLM model used for filtering</td>
+</tr>
+<tr>
 <td><code>DAILY_RUN_TIME</code></td>
 <td><code>09:00</code></td>
 <td>Time used when installing the scheduled task</td>
 </tr>
 <tr>
 <td><code>SCRAPE_SOURCE_URLS</code></td>
-<td>4 built-in sources</td>
+<td>10 built-in sources</td>
 <td>Comma-separated URLs to scrape</td>
 </tr>
 </tbody>
@@ -167,6 +151,7 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 </code></pre></div>
 <p>The UI lets you change all <code>.env</code> settings with arrow keys and prompts:</p>
 <ul>
+<li>Ollama host and model</li>
 <li>Job title keywords</li>
 <li>Target locations</li>
 <li>Target season</li>
@@ -258,14 +243,17 @@ Use /approve?id=... or /reject?id=...
 <li><code>ApplyGuy/2027-Internships</code> JSON feed</li>
 <li><code>sndsh404/summer-2027-internships</code> </li>
 <li><code>speedyapply/2027-SWE-College-Jobs</code> </li>
+<li><code>speedyapply/2027-AI-College-Jobs</code> </li>
 <li><code>dreamworkhq/Tech-Internships-2027</code> </li>
+<li><code>aprameyak/2027-tech-jobs</code> — large community list (also has New Grad and Off-Cycle sections)</li>
+<li><code>SuryaHarikrishnan/internship-tracker</code> (SWE and Data/AI/ML listings)</li>
 <li><code>Y Combinator</code> via <code>https://devasheeshg.github.io/yc-api/companies/hiring.json</code> — internship/co-op roles at YC startups</li>
 </ul>
-<p>Optional extra sources (larger / slower):</p>
+<p>Optional extra sources:</p>
 <ul>
-<li><code>aprameyak/2027-tech-jobs</code> — large community list with New Grad and Off-Cycle sections</li>
 <li><code>speedyapply/2027-SWE-College-Jobs/INTERN_INTL.md</code> — international roles</li>
 </ul>
+<p>If the run gets too slow, remove <code>aprameyak/2027-tech-jobs</code> or lower <code>MAX_LLM_CALLS</code>.</p>
 <p>You can add or remove sources by editing <code>SCRAPE_SOURCE_URLS</code> in <code>config/.env</code> as a comma-separated list. The bot can handle:</p>
 <ul>
 <li>raw GitHub markdown READMEs</li>
@@ -336,6 +324,7 @@ Use /approve?id=... or /reject?id=...
 <p>And the model is pulled:</p>
 <div class="code-block"><pre><span></span><code><span class="n">ollama</span> <span class="n">pull</span> <span class="n">qwen2</span><span class="p">.</span><span class="n">5</span><span class="p">:</span><span class="n">7b</span>
 </code></pre></div>
+<p>To switch models, run <code>internship-bot-manage</code> and select <code>Ollama model</code>.</p>
 <h3 id="no-listings-are-found">No listings are found</h3>
 <ul>
 <li>Check <code>TARGET_ROLE_KEYWORDS</code> in <code>config/.env</code>.</li>
@@ -358,11 +347,7 @@ export const docToc = `<nav class="toc"><div class="toc">
 <li><a href="#overview">Overview</a></li>
 <li><a href="#what-the-bot-does">What the bot does</a></li>
 <li><a href="#requirements">Requirements</a></li>
-<li><a href="#installation">Installation</a><ul>
-<li><a href="#windows">Windows</a></li>
-<li><a href="#macos">macOS</a></li>
-</ul>
-</li>
+<li><a href="#installation">Installation</a></li>
 <li><a href="#first-time-setup">First-time setup</a></li>
 <li><a href="#configuration-with-the-terminal-ui">Configuration with the terminal UI</a></li>
 <li><a href="#manual-daily-run">Manual daily run</a></li>
