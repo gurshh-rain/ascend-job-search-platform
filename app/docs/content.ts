@@ -18,7 +18,7 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <h2 id="requirements">Requirements</h2>
 <ul>
 <li>Python 3.11+</li>
-<li><a href="https://ollama.com">Ollama</a> installed</li>
+<li><a href="https://ollama.com">Ollama</a> with <code>qwen2.5:7b</code> pulled</li>
 <li>A Gmail account with an <a href="https://myaccount.google.com/apppasswords">App Password</a></li>
 <li>Windows Task Scheduler (or cron on Linux/macOS) for automation</li>
 <li>Optional: <code>cloudflared</code> or <code>ngrok</code> to expose the local approve/reject server</li>
@@ -38,13 +38,12 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 </code></pre></div>
 </li>
 <li>
-<p>Run <code>internship-bot</code> for the first time:</p>
-<div class="code-block"><pre><span></span><code><span class="n">internship-bot</span>
+<p>Pull the Ollama model:</p>
+<div class="code-block"><pre><span></span><code><span class="n">ollama</span> <span class="n">pull</span> <span class="n">qwen2</span><span class="p">.</span><span class="n">5</span><span class="p">:</span><span class="n">7b</span>
 </code></pre></div>
-<p>The agent will ask you for your settings, including which Ollama model to use, and save them to <code>config/.env</code>.</p>
 </li>
 <li>
-<p>If you prefer to configure it manually, copy the template:</p>
+<p>The first time you run <code>internship-bot</code> it will prompt you for settings and save them to <code>config/.env</code>. If you prefer to edit the file manually, copy the template:</p>
 <div class="code-block"><pre><span></span><code><span class="nb">Copy-Item</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span><span class="p">.</span><span class="n">example</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span>
 </code></pre></div>
 </li>
@@ -136,6 +135,11 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <td>Max LLM calls per run. <code>0</code> means no cap. Use e.g. <code>300</code> to keep runs fast.</td>
 </tr>
 <tr>
+<td><code>MAX_LISTING_AGE_DAYS</code></td>
+<td><code>14</code></td>
+<td>Ignore listings posted more than this many days ago. <code>0</code> means no age limit.</td>
+</tr>
+<tr>
 <td><code>OLLAMA_HOST</code></td>
 <td><code>http://localhost:11434</code></td>
 <td>URL of the local Ollama server</td>
@@ -143,7 +147,7 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <tr>
 <td><code>OLLAMA_MODEL</code></td>
 <td><code>qwen2.5:7b</code></td>
-<td>Local LLM model used for filtering (chosen during first-time setup)</td>
+<td>Local LLM model used for filtering</td>
 </tr>
 <tr>
 <td><code>DAILY_RUN_TIME</code></td>
@@ -154,6 +158,21 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <td><code>SCRAPE_SOURCE_URLS</code></td>
 <td>17 built-in sources</td>
 <td>Comma-separated URLs to scrape</td>
+</tr>
+<tr>
+<td><code>RSS_FEEDS</code></td>
+<td>(empty)</td>
+<td>RSS/Atom job feeds</td>
+</tr>
+<tr>
+<td><code>COMPANY_CAREER_URLS</code></td>
+<td>(empty)</td>
+<td>Company career pages or job boards with HTML/JSON-LD</td>
+</tr>
+<tr>
+<td><code>LINKEDIN_SEARCH_URLS</code></td>
+<td>(empty)</td>
+<td>LinkedIn search URLs (experimental)</td>
 </tr>
 </tbody>
 </table>
@@ -238,8 +257,11 @@ Use /approve?id=... or /reject?id=...
 <p>Change the time (<code>09:00</code>) and the two paths to match your system.</p>
 <h3 id="important-notes-about-automation">Important notes about automation</h3>
 <ul>
-<li>The scheduled task only runs <code>internship-bot</code>. It does <strong>not</strong> start the FastAPI server or Cloudflare tunnel.</li>
-<li>For the email buttons to work, you still need the server and tunnel running. You can either leave them running in a terminal, create a second scheduled task for the server, or run them on startup.</li>
+<li>The scheduled task created by <code>internship-bot-manage</code> has <strong>two triggers</strong>:</li>
+<li>A daily run at your chosen time (e.g. <code>09:00</code>).</li>
+<li>An "At logon" trigger, so if your PC is off at 9:00 the bot will run the next time you log in.</li>
+<li><code>run_daily.py</code> keeps track of the last run date in <code>data/sent_log.json</code>. If the bot already ran today, it skips the run, so the logon trigger does not cause duplicate emails.</li>
+<li><code>internship-bot</code> starts the FastAPI server and Cloudflare tunnel automatically, so the email buttons work without a separate terminal.</li>
 <li>The bot uses your local Ollama model. Make sure Ollama is running before the scheduled task fires.</li>
 </ul>
 <h3 id="running-the-server-automatically">Running the server automatically</h3>
@@ -264,7 +286,7 @@ Use /approve?id=... or /reject?id=...
 <li><code>sonak11/internatlas</code> — 700+ open Summer 2027 roles across categories</li>
 <li><code>aprameyak/2027-tech-jobs</code> — large community list (also has New Grad and Off-Cycle sections)</li>
 <li><code>SuryaHarikrishnan/internship-tracker</code> (SWE and Data/AI/ML listings)</li>
-<li><code>jerrylin-23/2027-canada-internternships</code> </li>
+<li><code>jerrylin-23/2027-canada-internships</code> </li>
 <li><code>zapplyjobs/Canada-Internships-2027</code> </li>
 <li><code>zapplyjobs/Internships-2027</code> </li>
 <li><code>negarprh/Canadian-Tech-Internships-2026</code> (<code>README-2027.md</code>)</li>
@@ -282,7 +304,11 @@ Use /approve?id=... or /reject?id=...
 <li>raw GitHub markdown READMEs</li>
 <li>HTML tables</li>
 <li>JSON feeds where the top level is a list of job objects</li>
+<li>RSS/Atom feeds (set <code>RSS_FEEDS</code>)</li>
+<li>Company career pages and job boards with JSON-LD or HTML links (set <code>COMPANY_CAREER_URLS</code>)</li>
+<li>LinkedIn search URLs, copied from the browser (set <code>LINKEDIN_SEARCH_URLS</code>; experimental, may be rate-limited)</li>
 </ul>
+<p>Glassdoor and Handshake are not supported because they require login.</p>
 <h2 id="updating-search-filters">Updating search filters</h2>
 <p>Edit <code>.env</code> directly or use <code>internship-bot-manage</code>.</p>
 <p>Examples of <code>TARGET_ROLE_KEYWORDS</code>:</p>
@@ -344,8 +370,8 @@ Use /approve?id=... or /reject?id=...
 <p>Make sure Ollama is running:</p>
 <div class="code-block"><pre><span></span><code><span class="n">ollama</span> <span class="n">serve</span>
 </code></pre></div>
-<p>And the model you selected is pulled:</p>
-<div class="code-block"><pre><span></span><code><span class="n">ollama</span> <span class="n">pull</span> <span class="p">&lt;</span><span class="n">your-model</span><span class="p">&gt;</span>
+<p>And the model is pulled:</p>
+<div class="code-block"><pre><span></span><code><span class="n">ollama</span> <span class="n">pull</span> <span class="n">qwen2</span><span class="p">.</span><span class="n">5</span><span class="p">:</span><span class="n">7b</span>
 </code></pre></div>
 <p>To switch models, run <code>internship-bot-manage</code> and select <code>Ollama model</code>.</p>
 <h3 id="no-listings-are-found">No listings are found</h3>

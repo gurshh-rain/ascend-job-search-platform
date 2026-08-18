@@ -19,7 +19,7 @@
 ## Requirements
 
 - Python 3.11+
-- [Ollama](https://ollama.com) installed
+- [Ollama](https://ollama.com) with `qwen2.5:7b` pulled
 - A Gmail account with an [App Password](https://myaccount.google.com/apppasswords)
 - Windows Task Scheduler (or cron on Linux/macOS) for automation
 - Optional: `cloudflared` or `ngrok` to expose the local approve/reject server
@@ -40,15 +40,13 @@
    pip install -e .
    ```
 
-4. Run `internship-bot` for the first time:
+4. Pull the Ollama model:
 
    ```powershell
-   internship-bot
+   ollama pull qwen2.5:7b
    ```
 
-   The agent will ask you for your settings, including which Ollama model to use, and save them to `config/.env`.
-
-5. If you prefer to configure it manually, copy the template:
+5. The first time you run `internship-bot` it will prompt you for settings and save them to `config/.env`. If you prefer to edit the file manually, copy the template:
 
    ```powershell
    Copy-Item config/.env.example config/.env
@@ -94,10 +92,14 @@ Optional but useful:
 | `TARGET_SEASON` | `Summer 2027` | Internship season to look for |
 | `MAX_DAILY_LISTINGS` | `25` | Max listings per email. `0` means no cap. Extra are queued. |
 | `MAX_LLM_CALLS` | `0` | Max LLM calls per run. `0` means no cap. Use e.g. `300` to keep runs fast. |
+| `MAX_LISTING_AGE_DAYS` | `14` | Ignore listings posted more than this many days ago. `0` means no age limit. |
 | `OLLAMA_HOST` | `http://localhost:11434` | URL of the local Ollama server |
-| `OLLAMA_MODEL` | `qwen2.5:7b` | Local LLM model used for filtering (chosen during first-time setup) |
+| `OLLAMA_MODEL` | `qwen2.5:7b` | Local LLM model used for filtering |
 | `DAILY_RUN_TIME` | `09:00` | Time used when installing the scheduled task |
 | `SCRAPE_SOURCE_URLS` | 17 built-in sources | Comma-separated URLs to scrape |
+| `RSS_FEEDS` | (empty) | RSS/Atom job feeds |
+| `COMPANY_CAREER_URLS` | (empty) | Company career pages or job boards with HTML/JSON-LD |
+| `LINKEDIN_SEARCH_URLS` | (empty) | LinkedIn search URLs (experimental) |
 
 ## Configuration with the terminal UI
 
@@ -231,8 +233,11 @@ Change the time (`09:00`) and the two paths to match your system.
 
 ### Important notes about automation
 
-- The scheduled task only runs `internship-bot`. It does **not** start the FastAPI server or Cloudflare tunnel.
-- For the email buttons to work, you still need the server and tunnel running. You can either leave them running in a terminal, create a second scheduled task for the server, or run them on startup.
+- The scheduled task created by `internship-bot-manage` has **two triggers**:
+  - A daily run at your chosen time (e.g. `09:00`).
+  - An "At logon" trigger, so if your PC is off at 9:00 the bot will run the next time you log in.
+- `run_daily.py` keeps track of the last run date in `data/sent_log.json`. If the bot already ran today, it skips the run, so the logon trigger does not cause duplicate emails.
+- `internship-bot` starts the FastAPI server and Cloudflare tunnel automatically, so the email buttons work without a separate terminal.
 - The bot uses your local Ollama model. Make sure Ollama is running before the scheduled task fires.
 
 ### Running the server automatically
@@ -262,7 +267,7 @@ By default the bot scrapes:
 - `sonak11/internatlas` — 700+ open Summer 2027 roles across categories
 - `aprameyak/2027-tech-jobs` — large community list (also has New Grad and Off-Cycle sections)
 - `SuryaHarikrishnan/internship-tracker` (SWE and Data/AI/ML listings)
-- `jerrylin-23/2027-canada-internternships` 
+- `jerrylin-23/2027-canada-internships` 
 - `zapplyjobs/Canada-Internships-2027` 
 - `zapplyjobs/Internships-2027` 
 - `negarprh/Canadian-Tech-Internships-2026` (`README-2027.md`)
@@ -282,6 +287,11 @@ You can add or remove sources by editing `SCRAPE_SOURCE_URLS` in `config/.env` a
 - raw GitHub markdown READMEs
 - HTML tables
 - JSON feeds where the top level is a list of job objects
+- RSS/Atom feeds (set `RSS_FEEDS`)
+- Company career pages and job boards with JSON-LD or HTML links (set `COMPANY_CAREER_URLS`)
+- LinkedIn search URLs, copied from the browser (set `LINKEDIN_SEARCH_URLS`; experimental, may be rate-limited)
+
+Glassdoor and Handshake are not supported because they require login.
 
 ## Updating search filters
 
@@ -332,10 +342,10 @@ Make sure Ollama is running:
 ollama serve
 ```
 
-And the model you selected is pulled:
+And the model is pulled:
 
 ```powershell
-ollama pull <your-model>
+ollama pull qwen2.5:7b
 ```
 
 To switch models, run `internship-bot-manage` and select `Ollama model`.
