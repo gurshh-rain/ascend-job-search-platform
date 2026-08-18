@@ -31,12 +31,13 @@ const options = [
     label: "Windows",
     icon: WindowsIcon,
     command:
-      "python -m venv .venv && .venv\\Scripts\\activate.bat && pip install -e . && copy config\\.env.example config\\.env && internship-bot",
+      "git clone https://github.com/gurshaan1124/internship-bot.git && cd internship-bot && python -m venv .venv && call .venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install -e . && internship-bot",
   },
   {
     label: "macOS",
     icon: MacIcon,
-    command: `# 1. Get the code\ngit clone https://github.com/gurshaan1124/internship-bot.git\ncd internship-bot\n\n# 2. Make a virtual environment\npython3 -m venv .venv\nsource .venv/bin/activate\n\n# 3. Install the bot and its Python dependencies\npip install -e .\n\n# 4. Install the Cloudflare tunnel tool\nbrew install cloudflared\n\n# 5. Run it (first run starts the setup wizard)\ninternship-bot`,
+    command:
+      "git clone https://github.com/gurshaan1124/internship-bot.git && cd internship-bot && python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install --upgrade pip && pip install -e . && internship-bot",
   },
 ];
 
