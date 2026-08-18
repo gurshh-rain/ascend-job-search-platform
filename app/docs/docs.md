@@ -46,7 +46,7 @@
    ollama pull qwen2.5:7b
    ```
 
-5. Copy the environment template:
+5. The first time you run `internship-bot` it will prompt you for settings and save them to `config/.env`. If you prefer to edit the file manually, copy the template:
 
    ```powershell
    Copy-Item config/.env.example config/.env
@@ -54,7 +54,25 @@
 
 ## First-time setup
 
-Edit `config/.env` and fill in at least these values:
+The first time you run `internship-bot` or `internship-bot-manage`, it will ask for the settings it needs:
+
+- Gmail address and App Password
+- Ollama host and model
+- Target job title keywords
+- Target locations
+- Target season
+- Max listings per email
+- Daily run time
+
+Your answers are saved to `config/.env`, so the next run will not ask again.
+
+If you prefer to configure it manually, copy the template and fill in the values:
+
+```powershell
+Copy-Item config/.env.example config/.env
+```
+
+At minimum you need:
 
 | Variable | What to put |
 |----------|-------------|
@@ -77,7 +95,7 @@ Optional but useful:
 | `OLLAMA_HOST` | `http://localhost:11434` | URL of the local Ollama server |
 | `OLLAMA_MODEL` | `qwen2.5:7b` | Local LLM model used for filtering |
 | `DAILY_RUN_TIME` | `09:00` | Time used when installing the scheduled task |
-| `SCRAPE_SOURCE_URLS` | 10 built-in sources | Comma-separated URLs to scrape |
+| `SCRAPE_SOURCE_URLS` | 17 built-in sources | Comma-separated URLs to scrape |
 
 ## Configuration with the terminal UI
 
@@ -106,7 +124,7 @@ You can also install the Windows scheduled task from this menu.
 
 ## Manual daily run
 
-Run the full pipeline once:
+Run the full pipeline once. If this is the first time, it will ask for setup first:
 
 ```powershell
 internship-bot
@@ -160,6 +178,8 @@ uvicorn server.server:app --port 8000 --reload
 ```
 
 ### 2. Expose it to the internet
+
+`internship-bot` will start a Cloudflare quick tunnel automatically before sending the email. If you prefer to start it manually:
 
 Using Cloudflare Tunnel (recommended):
 
@@ -237,15 +257,23 @@ By default the bot scrapes:
 - `speedyapply/2027-SWE-College-Jobs` 
 - `speedyapply/2027-AI-College-Jobs` 
 - `dreamworkhq/Tech-Internships-2027` 
+- `sonak11/internatlas` — 700+ open Summer 2027 roles across categories
 - `aprameyak/2027-tech-jobs` — large community list (also has New Grad and Off-Cycle sections)
 - `SuryaHarikrishnan/internship-tracker` (SWE and Data/AI/ML listings)
+- `jerrylin-23/2027-canada-internternships` 
+- `zapplyjobs/Canada-Internships-2027` 
+- `zapplyjobs/Internships-2027` 
+- `negarprh/Canadian-Tech-Internships-2026` (`README-2027.md`)
+- Hacker News "Who is hiring?" monthly thread (via `hn.algolia.com`)
 - `Y Combinator` via `https://devasheeshg.github.io/yc-api/companies/hiring.json` — internship/co-op roles at YC startups
 
 Optional extra sources:
 
 - `speedyapply/2027-SWE-College-Jobs/INTERN_INTL.md` — international roles
 
-If the run gets too slow, remove `aprameyak/2027-tech-jobs` or lower `MAX_LLM_CALLS`.
+If the run gets too slow, remove `sonak11/internatlas` and/or `aprameyak/2027-tech-jobs` or lower `MAX_LLM_CALLS`.
+
+The Hacker News source is lightweight (two small Algolia requests) and adds startup roles that rarely appear on GitHub lists.
 
 You can add or remove sources by editing `SCRAPE_SOURCE_URLS` in `config/.env` as a comma-separated list. The bot can handle:
 
@@ -279,7 +307,7 @@ The bot removes duplicate listings where **company + role** are the same, ignori
 
 | Command | What it does |
 |---------|--------------|
-| `internship-bot` | Scrape, filter, and send the daily digest |
+| `internship-bot` | Scrape, filter, and send the daily digest (starts the server/tunnel if needed) |
 | `internship-bot --dry-run` | Scrape and render, do not send email |
 | `internship-bot --limit 30` | Only process the first 30 raw listings |
 | `internship-bot-manage` | Open the settings UI |

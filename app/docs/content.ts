@@ -43,13 +43,27 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 </code></pre></div>
 </li>
 <li>
-<p>Copy the environment template:</p>
+<p>The first time you run <code>internship-bot</code> it will prompt you for settings and save them to <code>config/.env</code>. If you prefer to edit the file manually, copy the template:</p>
 <div class="code-block"><pre><span></span><code><span class="nb">Copy-Item</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span><span class="p">.</span><span class="n">example</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span>
 </code></pre></div>
 </li>
 </ol>
 <h2 id="first-time-setup">First-time setup</h2>
-<p>Edit <code>config/.env</code> and fill in at least these values:</p>
+<p>The first time you run <code>internship-bot</code> or <code>internship-bot-manage</code>, it will ask for the settings it needs:</p>
+<ul>
+<li>Gmail address and App Password</li>
+<li>Ollama host and model</li>
+<li>Target job title keywords</li>
+<li>Target locations</li>
+<li>Target season</li>
+<li>Max listings per email</li>
+<li>Daily run time</li>
+</ul>
+<p>Your answers are saved to <code>config/.env</code>, so the next run will not ask again.</p>
+<p>If you prefer to configure it manually, copy the template and fill in the values:</p>
+<div class="code-block"><pre><span></span><code><span class="nb">Copy-Item</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span><span class="p">.</span><span class="n">example</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span>
+</code></pre></div>
+<p>At minimum you need:</p>
 <table>
 <thead>
 <tr>
@@ -137,7 +151,7 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 </tr>
 <tr>
 <td><code>SCRAPE_SOURCE_URLS</code></td>
-<td>10 built-in sources</td>
+<td>17 built-in sources</td>
 <td>Comma-separated URLs to scrape</td>
 </tr>
 </tbody>
@@ -160,7 +174,7 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 </ul>
 <p>You can also install the Windows scheduled task from this menu.</p>
 <h2 id="manual-daily-run">Manual daily run</h2>
-<p>Run the full pipeline once:</p>
+<p>Run the full pipeline once. If this is the first time, it will ask for setup first:</p>
 <div class="code-block"><pre><span></span><code><span class="n">internship-bot</span>
 </code></pre></div>
 <p>Dry run (scrape and render but do not send email):</p>
@@ -193,6 +207,7 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <div class="code-block"><pre><span></span><code><span class="n">uvicorn</span> <span class="n">server</span><span class="p">.</span><span class="n">server</span><span class="p">:</span><span class="n">app</span> <span class="p">-</span><span class="n">-port</span> <span class="n">8000</span> <span class="p">-</span><span class="n">-reload</span>
 </code></pre></div>
 <h3 id="2-expose-it-to-the-internet">2. Expose it to the internet</h3>
+<p><code>internship-bot</code> will start a Cloudflare quick tunnel automatically before sending the email. If you prefer to start it manually:</p>
 <p>Using Cloudflare Tunnel (recommended):</p>
 <div class="code-block"><pre><span></span><code><span class="n">cloudflared</span> <span class="n">tunnel</span> <span class="p">-</span><span class="n">-url</span> <span class="n">http</span><span class="p">://</span><span class="n">localhost</span><span class="p">:</span><span class="n">8000</span>
 </code></pre></div>
@@ -245,15 +260,22 @@ Use /approve?id=... or /reject?id=...
 <li><code>speedyapply/2027-SWE-College-Jobs</code> </li>
 <li><code>speedyapply/2027-AI-College-Jobs</code> </li>
 <li><code>dreamworkhq/Tech-Internships-2027</code> </li>
+<li><code>sonak11/internatlas</code> — 700+ open Summer 2027 roles across categories</li>
 <li><code>aprameyak/2027-tech-jobs</code> — large community list (also has New Grad and Off-Cycle sections)</li>
 <li><code>SuryaHarikrishnan/internship-tracker</code> (SWE and Data/AI/ML listings)</li>
+<li><code>jerrylin-23/2027-canada-internternships</code> </li>
+<li><code>zapplyjobs/Canada-Internships-2027</code> </li>
+<li><code>zapplyjobs/Internships-2027</code> </li>
+<li><code>negarprh/Canadian-Tech-Internships-2026</code> (<code>README-2027.md</code>)</li>
+<li>Hacker News "Who is hiring?" monthly thread (via <code>hn.algolia.com</code>)</li>
 <li><code>Y Combinator</code> via <code>https://devasheeshg.github.io/yc-api/companies/hiring.json</code> — internship/co-op roles at YC startups</li>
 </ul>
 <p>Optional extra sources:</p>
 <ul>
 <li><code>speedyapply/2027-SWE-College-Jobs/INTERN_INTL.md</code> — international roles</li>
 </ul>
-<p>If the run gets too slow, remove <code>aprameyak/2027-tech-jobs</code> or lower <code>MAX_LLM_CALLS</code>.</p>
+<p>If the run gets too slow, remove <code>sonak11/internatlas</code> and/or <code>aprameyak/2027-tech-jobs</code> or lower <code>MAX_LLM_CALLS</code>.</p>
+<p>The Hacker News source is lightweight (two small Algolia requests) and adds startup roles that rarely appear on GitHub lists.</p>
 <p>You can add or remove sources by editing <code>SCRAPE_SOURCE_URLS</code> in <code>config/.env</code> as a comma-separated list. The bot can handle:</p>
 <ul>
 <li>raw GitHub markdown READMEs</li>
@@ -282,7 +304,7 @@ Use /approve?id=... or /reject?id=...
 <tbody>
 <tr>
 <td><code>internship-bot</code></td>
-<td>Scrape, filter, and send the daily digest</td>
+<td>Scrape, filter, and send the daily digest (starts the server/tunnel if needed)</td>
 </tr>
 <tr>
 <td><code>internship-bot --dry-run</code></td>
