@@ -31,13 +31,13 @@ const options = [
     label: "Windows",
     icon: WindowsIcon,
     command:
-      "git clone https://github.com/gurshaan1124/internship-bot.git && cd internship-bot && python -m venv .venv && call .venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install -e . && internship-bot",
+      "git clone https://github.com/gurshh-rain/ascend-job-agent.git && cd ascend-job-agent && python -m venv .venv && call .venv\\Scripts\\activate.bat && python -m pip install --upgrade pip && pip install -e . && internship-bot",
   },
   {
     label: "macOS",
     icon: MacIcon,
     command:
-      "git clone https://github.com/gurshaan1124/internship-bot.git && cd internship-bot && python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install --upgrade pip && pip install -e . && internship-bot",
+      "git clone https://github.com/gurshh-rain/ascend-job-agent.git && cd ascend-job-agent && python3 -m venv .venv && source .venv/bin/activate && python3 -m pip install --upgrade pip && pip install -e . && internship-bot",
   },
 ];
 
