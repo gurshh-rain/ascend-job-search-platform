@@ -31,7 +31,7 @@ const options = [
     label: "Windows",
     icon: WindowsIcon,
     command:
-      "python -m venv .venv; .venv\\Scripts\\activate; pip install -e .; Copy-Item config/.env.example config/.env; internship-bot",
+      "python -m venv .venv && .venv\\Scripts\\activate.bat && pip install -e . && copy config\\.env.example config\\.env && internship-bot",
   },
   {
     label: "macOS",
