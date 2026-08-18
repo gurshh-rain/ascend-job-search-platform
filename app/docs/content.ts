@@ -18,7 +18,7 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <h2 id="requirements">Requirements</h2>
 <ul>
 <li>Python 3.11+</li>
-<li><a href="https://ollama.com">Ollama</a> with <code>qwen2.5:7b</code> pulled</li>
+<li><a href="https://ollama.com">Ollama</a> installed</li>
 <li>A Gmail account with an <a href="https://myaccount.google.com/apppasswords">App Password</a></li>
 <li>Windows Task Scheduler (or cron on Linux/macOS) for automation</li>
 <li>Optional: <code>cloudflared</code> or <code>ngrok</code> to expose the local approve/reject server</li>
@@ -38,12 +38,13 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 </code></pre></div>
 </li>
 <li>
-<p>Pull the Ollama model:</p>
-<div class="code-block"><pre><span></span><code><span class="n">ollama</span> <span class="n">pull</span> <span class="n">qwen2</span><span class="p">.</span><span class="n">5</span><span class="p">:</span><span class="n">7b</span>
+<p>Run <code>internship-bot</code> for the first time:</p>
+<div class="code-block"><pre><span></span><code><span class="n">internship-bot</span>
 </code></pre></div>
+<p>The agent will ask you for your settings, including which Ollama model to use, and save them to <code>config/.env</code>.</p>
 </li>
 <li>
-<p>The first time you run <code>internship-bot</code> it will prompt you for settings and save them to <code>config/.env</code>. If you prefer to edit the file manually, copy the template:</p>
+<p>If you prefer to configure it manually, copy the template:</p>
 <div class="code-block"><pre><span></span><code><span class="nb">Copy-Item</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span><span class="p">.</span><span class="n">example</span> <span class="n">config</span><span class="p">/.</span><span class="n">env</span>
 </code></pre></div>
 </li>
@@ -142,7 +143,7 @@ export const docBody = `<h1 id="internship-bot-documentation">internship-bot Doc
 <tr>
 <td><code>OLLAMA_MODEL</code></td>
 <td><code>qwen2.5:7b</code></td>
-<td>Local LLM model used for filtering</td>
+<td>Local LLM model used for filtering (chosen during first-time setup)</td>
 </tr>
 <tr>
 <td><code>DAILY_RUN_TIME</code></td>
@@ -343,8 +344,8 @@ Use /approve?id=... or /reject?id=...
 <p>Make sure Ollama is running:</p>
 <div class="code-block"><pre><span></span><code><span class="n">ollama</span> <span class="n">serve</span>
 </code></pre></div>
-<p>And the model is pulled:</p>
-<div class="code-block"><pre><span></span><code><span class="n">ollama</span> <span class="n">pull</span> <span class="n">qwen2</span><span class="p">.</span><span class="n">5</span><span class="p">:</span><span class="n">7b</span>
+<p>And the model you selected is pulled:</p>
+<div class="code-block"><pre><span></span><code><span class="n">ollama</span> <span class="n">pull</span> <span class="p">&lt;</span><span class="n">your-model</span><span class="p">&gt;</span>
 </code></pre></div>
 <p>To switch models, run <code>internship-bot-manage</code> and select <code>Ollama model</code>.</p>
 <h3 id="no-listings-are-found">No listings are found</h3>

@@ -31,13 +31,13 @@ const options = [
     label: "Windows",
     icon: WindowsIcon,
     command:
-      "python -m venv .venv; .venv\\Scripts\\activate; pip install -e .; ollama pull qwen2.5:7b; Copy-Item config/.env.example config/.env; internship-bot",
+      "python -m venv .venv; .venv\\Scripts\\activate; pip install -e .; Copy-Item config/.env.example config/.env; internship-bot",
   },
   {
     label: "macOS",
     icon: MacIcon,
     command:
-      "python3 -m venv .venv && source .venv/bin/activate && pip3 install -e . && ollama pull qwen2.5:7b && cp config/.env.example config/.env && internship-bot",
+      "python3 -m venv .venv && source .venv/bin/activate && pip3 install -e . && cp config/.env.example config/.env && internship-bot",
   },
 ];
 

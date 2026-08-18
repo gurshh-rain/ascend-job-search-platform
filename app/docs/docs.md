@@ -19,7 +19,7 @@
 ## Requirements
 
 - Python 3.11+
-- [Ollama](https://ollama.com) with `qwen2.5:7b` pulled
+- [Ollama](https://ollama.com) installed
 - A Gmail account with an [App Password](https://myaccount.google.com/apppasswords)
 - Windows Task Scheduler (or cron on Linux/macOS) for automation
 - Optional: `cloudflared` or `ngrok` to expose the local approve/reject server
@@ -40,13 +40,15 @@
    pip install -e .
    ```
 
-4. Pull the Ollama model:
+4. Run `internship-bot` for the first time:
 
    ```powershell
-   ollama pull qwen2.5:7b
+   internship-bot
    ```
 
-5. The first time you run `internship-bot` it will prompt you for settings and save them to `config/.env`. If you prefer to edit the file manually, copy the template:
+   The agent will ask you for your settings, including which Ollama model to use, and save them to `config/.env`.
+
+5. If you prefer to configure it manually, copy the template:
 
    ```powershell
    Copy-Item config/.env.example config/.env
@@ -93,7 +95,7 @@ Optional but useful:
 | `MAX_DAILY_LISTINGS` | `25` | Max listings per email. `0` means no cap. Extra are queued. |
 | `MAX_LLM_CALLS` | `0` | Max LLM calls per run. `0` means no cap. Use e.g. `300` to keep runs fast. |
 | `OLLAMA_HOST` | `http://localhost:11434` | URL of the local Ollama server |
-| `OLLAMA_MODEL` | `qwen2.5:7b` | Local LLM model used for filtering |
+| `OLLAMA_MODEL` | `qwen2.5:7b` | Local LLM model used for filtering (chosen during first-time setup) |
 | `DAILY_RUN_TIME` | `09:00` | Time used when installing the scheduled task |
 | `SCRAPE_SOURCE_URLS` | 17 built-in sources | Comma-separated URLs to scrape |
 
@@ -330,10 +332,10 @@ Make sure Ollama is running:
 ollama serve
 ```
 
-And the model is pulled:
+And the model you selected is pulled:
 
 ```powershell
-ollama pull qwen2.5:7b
+ollama pull <your-model>
 ```
 
 To switch models, run `internship-bot-manage` and select `Ollama model`.
